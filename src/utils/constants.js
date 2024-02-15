@@ -1,17 +1,31 @@
 export const ENTITIES = {
-    CUS: 'customer',
-    MER: 'merchant',
-    FIN: 'financer',
-    EMP: 'employee',
-    FAM: 'family',
-    DLR: 'dealer',
-    GOV: 'government',
-    PRJ: 'project',
-    HOU: 'house',
-    PLT: 'plot',
-    BRK: 'broker',
-    SLF: 'self'
+        'customer': 'CUS',
+        'merchant': 'MER',
+        'financer': 'FIN',
+        'employee': 'EMP',
+        'family': 'FAM',
+        'dealer': 'DLR',
+        'government': 'GOV',
+        'project': 'PRJ',
+        'house': 'HOU',
+        'plot': 'PLT',
+        'broker': 'BRK',
+        'owner': 'OWN'
 }
+
+export const ENTITY_TYPES = [
+    'customer',
+    'merchant',
+    'financer',
+    'employee', 
+    'family',
+    'dealer',
+    'government',
+    'project',
+    'property',
+    'broker',
+    'owner'
+]
 
 export const PROJECTS = {
     BGC: 'Balaji Green City',
