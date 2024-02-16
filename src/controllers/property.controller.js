@@ -3,6 +3,7 @@ import {
     getPropertyValidation,
     updatePropertyValidation
  } from '../utils/validations.js'
+ import { db } from '../index.js'
 
 const createProperty = async (req, res) => {
     try {
@@ -45,6 +46,7 @@ const updateProperty = async (req, res) => {
         if (!property_id) return res.status(400).send({ statusCode: 400, message: 'property_id is required' })
         const { description } = req.body
         const property = await db('Property').where({ property_id }).update({ description }).returning('*')
+        if (!property.length) return res.status(404).send({ statusCode: 404, message: 'Property not found' })
         res.send({ statusCode: 200, property })
     } catch (error) {
         console.error(error)
