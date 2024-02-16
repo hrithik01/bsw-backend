@@ -7,6 +7,7 @@ export const up = async (knex) => {
         table.string('entity_name').notNullable()
         table.enu('entity_type', ENTITY_TYPES).notNullable()
         table.string('entity_username').notNullable().unique()
+        table.string('description').notNullable()
     })
 }
 

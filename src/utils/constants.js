@@ -3,12 +3,10 @@ export const ENTITIES = {
         'merchant': 'MER',
         'financer': 'FIN',
         'employee': 'EMP',
+        'contract_worker': 'CNW',
         'family': 'FAM',
         'dealer': 'DLR',
         'government': 'GOV',
-        'project': 'PRJ',
-        'house': 'HOU',
-        'plot': 'PLT',
         'broker': 'BRK',
         'owner': 'OWN'
 }
@@ -17,12 +15,11 @@ export const ENTITY_TYPES = [
     'customer',
     'merchant',
     'financer',
-    'employee', 
+    'employee',
+    'contract_worker', 
     'family',
     'dealer',
     'government',
-    'project',
-    'property',
     'broker',
     'owner'
 ]
@@ -36,7 +33,7 @@ export const PROJECTS = {
     OTH: 'Other'
 }
 
-export const PAYMENT_MODES = ['cash', 'cheque', 'online', 'RTGS', 'UPI', 'other']
+export const PAYMENT_MODES = ['cash', 'cheque', 'bank-transfer', 'RTGS', 'UPI', 'other']
 
 export const TRANSACTION_TYPES = [ 'credit', 'debit']
 
@@ -46,10 +43,10 @@ export const CREDIT_SOURCE = [
     'dealer', 
     'financer', 
     'self-loan', 
-    'comapny', 
+    'company', 
     'brokerage',
     'rent', 
-    'partner-credit',
+    'self-credit',
     'government',
     'other'
 ]
@@ -63,6 +60,8 @@ export const EXPENSE_SOURCE = [
     'labour-bill',
     'utility-bill',
     'property-purchase',
+    'registry',
+    'advocate',
     'tax',
     'self-debit',
     'brokerage',
@@ -84,15 +83,27 @@ export const MATERIAL_TYPE = [
     'other'
 ]
 
-export const LABOUR_SERVICE_TYPE = [
+export const SERVICE_TYPE = [
     'mason',
     'labour',
     'carpenter',
     'plumber',
     'electrician',
     'painter',
-    'architect',
     'flooring',
     'interior',
+    'civil',
+    'lawyer',
+    'other'
+]
+
+export const UTILITY_TYPE = [
+    'electricity',
+    'water',
+    'fuel',
+    'printing',
+    'advertisement',
+    'emitra',
+    'registry',
     'other'
 ]
