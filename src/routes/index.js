@@ -9,6 +9,6 @@ const router = express.Router()
 router.use('/api', healthCheckRouter)
 router.use('/entity', entitiesRouter)
 router.use('/payment', paymentsRouter)
-router.use('/stock', propertyRouter)
+router.use('/property', propertyRouter)
 
 export default router 

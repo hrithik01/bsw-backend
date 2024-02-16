@@ -10,9 +10,9 @@ const createEntity = async (req, res) => {
     try {
         const { error } = entityValidation.validate(req.body)
         if (error) return res.status(400).send({ statusCode: 400, message: error.details[0].message })
-        const { entity_name, entity_type } = req.body
+        const { entity_name, entity_type, description } = req.body
         const entity_username = `${ENTITIES[entity_type]}_${entity_name.replace(/\s/g, '').toLowerCase()}`
-        const entity = await db('Entity').insert({ entity_name, entity_type, entity_username }).returning('*')
+        const entity = await db('Entity').insert({ entity_name, entity_type, entity_username, description }).returning('*')
         res.send({ statusCode: 200, entity })
     } catch (error) {
         console.error(error)
