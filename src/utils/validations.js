@@ -49,7 +49,8 @@ export const createCreditEntryValidation = joi.object({
     entity_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     is_property_associated: joi.boolean().required(),
     property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
-    description: joi.string().required()
+    description: joi.string().required(),
+    transaction_date: joi.string().regex(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(20[0-9]{2})$/).required()
 })
 
 export const getCreditEntriesValidation = joi.object({
@@ -74,7 +75,8 @@ export const createDebitEntryValidation = joi.object({
     property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     is_bill: joi.boolean().required(),
     billed_for: joi.string().valid(...MATERIAL_TYPE, ...SERVICE_TYPE, ...UTILITY_TYPE),
-    description: joi.string().required()
+    description: joi.string().required(),
+    transaction_date: joi.string().regex(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(20[0-9]{2})$/).required()
 })
 
 export const getDebitEntriesValidation = joi.object({
