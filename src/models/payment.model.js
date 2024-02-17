@@ -11,6 +11,7 @@ import {
 
  export const up = async (knex) => {
     return Promise.all([
+
         knex.schema.createTable('Credit', (table) => {
                     table.
                     string('transaction_id').
@@ -23,7 +24,7 @@ import {
                     table.boolean('is_property_associated').notNullable()
                     table.string('property_associated').references('property_id').inTable('Property')
                     table.string('description').notNullable()
-                    table.timestamps({ createdAt: true })
+                    table.timestamp('created_at', { useTz: true })
         }),
         knex.schema.createTable('Debit', (table) => {
             table.
@@ -41,7 +42,7 @@ import {
             // table.boolean('is_invoice_generated').notNullable()
             // table.string('invoice_id').notNullable().references('invoice_id').inTable('Invoice')
             table.string('description').notNullable()
-            table.timestamps({ createdAt: true })
+            table.timestamp('created_at', { useTz: true })
         }),
         // knex.schema.createTable('Invoice', (table) => {
         //     table.string('invoice_id').

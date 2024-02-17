@@ -74,13 +74,17 @@ export const MATERIAL_TYPE = [
     'aggregate',
     'brick',
     'steel',
-    'flooring',
-    'plumbing',
-    'electrical',
-    'painting',
-    'carpentry',
-    'interior',
-    'other'
+    'pop',
+    'aluminium/fibre',
+    'glass',
+    'MATERIAL_masonary',
+    'MATERIAL_flooring',
+    'MATERIAL_plumbing',
+    'MATERIAL_electrical',
+    'MATERIAL_painting',
+    'MATERIAL_carpentry',
+    'MATERIAL_interior',
+    'MATERIAL_other'
 ]
 
 export const SERVICE_TYPE = [
@@ -90,11 +94,11 @@ export const SERVICE_TYPE = [
     'plumber',
     'electrician',
     'painter',
-    'flooring',
-    'interior',
+    'flooring_wala',
+    'interior_wala',
     'civil',
     'lawyer',
-    'other'
+    'SERVICE_other'
 ]
 
 export const UTILITY_TYPE = [
@@ -105,5 +109,5 @@ export const UTILITY_TYPE = [
     'advertisement',
     'emitra',
     'registry',
-    'other'
+    'BILL_other'
 ]
