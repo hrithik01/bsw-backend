@@ -7,18 +7,38 @@ import {
     getDebitEntriesValidation
 } from "../utils/validations.js"
 
+async function dateToTimestamp(transaction_date) {
+    const [day, month, year] = transaction_date.split('-');
+    const date = new Date(year, month - 1, day);
+    date.setHours(9, 0, 0, 0);
+    const today = new Date();
+    today.setHours(9, 0, 0, 0);
+    const created_at = date.getTime() === today.getTime() ? new Date() : date;
+    const now = new Date();
+    if (created_at > now) {
+        throw new Error('Transaction date cannot be in the future');
+    }
+    return created_at;
+}
+
 async function createCredit(req, res) {
     try {
         const { error } = createCreditEntryValidation.validate(req.body)
         if (error) return res.status(400).send(
             { statusCode: 400, message: error.details[0].message }
             )
-        const { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, description } = req.body
+        const { 
+            amount, source, payment_mode, entity_associated, is_property_associated, property_associated, description, transaction_date = null
+         } = req.body
         if (is_property_associated && !property_associated) return res.status(400).send(
             { statusCode: 400, message: "You must provide a property_associated to it field" }
             )
+        let created_at = new Date()
+        if (transaction_date) {
+            created_at = await dateToTimestamp(transaction_date)
+        }
         const credit = await db('Credit').insert(
-            { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, description, created_at: new Date()}
+            { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, description, created_at }
             ).returning('*')
         res.send({ statusCode: 200, credit })
     } catch (error) {
@@ -69,15 +89,21 @@ async function createDebit(req, res) {
         if (error) return res.status(400).send(
             { statusCode: 400, message: error.details[0].message }
             )
-        const { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, is_bill, billed_for, description } = req.body
+        const { 
+            amount, source, payment_mode, entity_associated, is_property_associated, property_associated, is_bill, billed_for, description, transaction_date = null 
+        } = req.body
         if(is_bill && !billed_for) return res.status(400).send(
             { statusCode: 400, message: "You must provide a billed_for field if it is a bill" }
             )
         if(is_property_associated && !property_associated) return res.status(400).send(
             { statusCode: 400, message: "You must provide a property_associated to it field" }
             )
+        let created_at = new Date()
+        if (transaction_date) {
+            created_at = await dateToTimestamp(transaction_date)
+        }
         const debit = await db('Debit').insert(
-            { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, is_bill, billed_for, description, created_at: new Date()}
+            { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, is_bill, billed_for, description, created_at }
             ).returning('*')
         res.send({ statusCode: 200, debit })
     } catch (error) {
