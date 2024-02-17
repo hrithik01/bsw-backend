@@ -6,7 +6,8 @@ import {
     MATERIAL_TYPE,
     SERVICE_TYPE,
     UTILITY_TYPE,
-    PAYMENT_MODES
+    PAYMENT_MODES,
+    REL_TIME_PERIODS
   } from '../utils/constants.js'
 
 export const entityValidation = joi.object({
@@ -54,7 +55,10 @@ export const createCreditEntryValidation = joi.object({
 export const getCreditEntriesValidation = joi.object({
     entity_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
-    source: joi.string().valid(...CREDIT_SOURCE)
+    source: joi.string().valid(...CREDIT_SOURCE),
+    from_timestamp: joi.date().iso().allow(null),
+    to_timestamp: joi.date().iso().allow(null),
+    rel_time: joi.string().valid(...REL_TIME_PERIODS).allow(null)
 })
 
 export const transactionIdValidation = joi.object({
@@ -77,5 +81,9 @@ export const getDebitEntriesValidation = joi.object({
     entity_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     source: joi.string().valid(...EXPENSE_SOURCE),
-    billed_for: joi.string().valid(...MATERIAL_TYPE, ...SERVICE_TYPE, ...UTILITY_TYPE)
+    is_bill: joi.boolean(),
+    billed_for: joi.string().valid(...MATERIAL_TYPE, ...SERVICE_TYPE, ...UTILITY_TYPE),
+    from_timestamp: joi.date().iso().allow(null),
+    to_timestamp: joi.date().iso().allow(null),
+    rel_time: joi.string().valid(...REL_TIME_PERIODS).allow(null)
 })

@@ -122,8 +122,76 @@ async function deleteDebitById(req, res) {
     }
 }
 
+async function convertRelTimeToTimestamp(rel_time) {
+    let fromDate;
+    const toDate = new Date();
+
+    switch (rel_time) {
+        case 'last-24-hours':
+            fromDate = new Date();
+            fromDate.setDate(toDate.getDate() - 1);
+            break;
+        case 'last-7-days':
+            fromDate = new Date();
+            fromDate.setDate(toDate.getDate() - 7);
+            break;
+        case 'last-30-days':
+            fromDate = new Date();
+            fromDate.setDate(toDate.getDate() - 30);
+            break;
+        case 'last-90-days':
+            fromDate = new Date();
+            fromDate.setDate(toDate.getDate() - 90);
+            break;
+        case 'last-365-days':
+            fromDate = new Date();
+            fromDate.setDate(toDate.getDate() - 365);
+            break;
+        default:
+            return  { statusCode: 400, message: "Invalid rel_time" }
+    }
+    return { fromDate, toDate }
+}
+
 async function getCreditEntries(req, res) {
     try {
+        const { error } = getCreditEntriesValidation.validate(req.body)
+        if (error) return res.status(400).send(
+            { statusCode: 400, message: error.details[0].message}
+        )
+        const { 
+            entity_associated = null,
+            property_associated = null,
+            source = null,
+            rel_time = null 
+        } = req.body
+        let { from_timestamp = null, to_timestamp = null } = req.body
+        if (from_timestamp && !to_timestamp) {
+            to_timestamp = new Date()
+        }
+        if(from_timestamp && to_timestamp && from_timestamp > to_timestamp) return res.status(400).send(
+            { statusCode: 400, message: "from_timestamp must be less than to_timestamp" }
+            )
+        if (rel_time) {
+            const { fromDate = null, toDate = null }  = await convertRelTimeToTimestamp(rel_time)
+            from_timestamp = fromDate
+            to_timestamp = toDate
+    }
+        const creditEntries = await db('Credit')
+            .where(builder => {
+                if(entity_associated) builder.where({ entity_associated })
+                if(property_associated) builder.where({ property_associated })
+                if(source) builder.where({ source })
+                if(from_timestamp && to_timestamp) builder.whereBetween('created_at', [from_timestamp, to_timestamp])
+            })
+        if (creditEntries.length === 0) return res.status(404).send(
+            { statusCode: 404, message: 'No Credit Entries found' }
+            )
+        let message = 'All time Entries'
+        if(from_timestamp && to_timestamp) {
+             message = ` Entries-: \n From- ${from_timestamp} \n to- ${to_timestamp}`
+        }
+        res.send({ statusCode: 200, message, creditEntries })
      } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -132,6 +200,47 @@ async function getCreditEntries(req, res) {
 
 async function getDebitEntries(req, res) {
     try {
+        const { error } = getDebitEntriesValidation.validate(req.body)
+        if (error) return res.status(400).send(
+            { statusCode: 400, message: error.details[0].message}
+        )
+        const { 
+            entity_associated = null,
+            property_associated = null,
+            source = null,
+            is_bill = null,
+            billed_for = null,
+            rel_time = null 
+        } = req.body
+        let { from_timestamp = null, to_timestamp = null } = req.body
+        if (from_timestamp && !to_timestamp) {
+            to_timestamp = new Date()
+        }
+        if(from_timestamp && to_timestamp && from_timestamp > to_timestamp) return res.status(400).send(
+            { statusCode: 400, message: "from_timestamp must be less than to_timestamp" }
+            )
+        if (rel_time) {
+            const { fromDate = null, toDate = null }  = await convertRelTimeToTimestamp(rel_time)
+            from_timestamp = fromDate
+            to_timestamp = toDate
+        }
+        const debitEntries = await db('Debit')
+            .where(builder => {
+                if(entity_associated) builder.where({ entity_associated })
+                if(property_associated) builder.where({ property_associated })
+                if(source) builder.where({ source })
+                if(is_bill) builder.where({ is_bill })
+                if(billed_for) builder.where({ billed_for })
+                if(from_timestamp && to_timestamp) builder.whereBetween('created_at', [from_timestamp, to_timestamp])
+            })
+        if (debitEntries.length === 0) return res.status(404).send(
+            { statusCode: 404, message: 'No Debit Entries found' }
+            )
+        let message = 'All time Entries'
+        if(from_timestamp && to_timestamp) {
+            message = ` Entries-: \n From- ${from_timestamp} \n to- ${to_timestamp}`
+        }
+        res.send({ statusCode: 200, message, debitEntries })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
