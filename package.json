@@ -1,6 +1,6 @@
 {
   "name": "h2j-bsw-be",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Backend of h2j bsw web app",
   "main": "index.js",
