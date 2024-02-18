@@ -6,6 +6,7 @@ import {
     createDebitEntryValidation,
     getDebitEntriesValidation
 } from "../utils/validations.js"
+import { convertToCSV } from "../utils/files.js"
 
 async function dateToTimestamp(transaction_date) {
     const [day, month, year] = transaction_date.split('-');
@@ -40,7 +41,7 @@ async function createCredit(req, res) {
         const credit = await db('Credit').insert(
             { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, description, created_at }
             ).returning('*')
-        res.send({ statusCode: 200, credit })
+        res.send({ statusCode: 200, data: credit })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -58,7 +59,7 @@ async function getCreditById(req, res) {
         if (credit.length === 0) return res.status(404).send(
             { statusCode: 404, message: 'Credit Record not found' }
             )
-        res.send({ statusCode: 200, credit })
+        res.send({ statusCode: 200, data: credit })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -76,7 +77,7 @@ async function deleteCreditById(req, res) {
         if (deletedCredit.length === 0) return res.status(404).send(
             { statusCode: 404, message: 'Credit Record not found' }
             )
-        res.send({ statusCode: 200, deletedCredit })
+        res.send({ statusCode: 200, data: deletedCredit })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -105,7 +106,7 @@ async function createDebit(req, res) {
         const debit = await db('Debit').insert(
             { amount, source, payment_mode, entity_associated, is_property_associated, property_associated, is_bill, billed_for, description, created_at }
             ).returning('*')
-        res.send({ statusCode: 200, debit })
+        res.send({ statusCode: 200, data: debit })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -123,7 +124,7 @@ async function getDebitById(req, res) {
         if (debit.length === 0) return res.status(404).send(
             { statusCode: 404, message: 'Debit Record not found' }
             )
-        res.send({ statusCode: 200, debit })
+        res.send({ statusCode: 200, data: debit })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -141,7 +142,7 @@ async function deleteDebitById(req, res) {
         if (deletedDebit.length === 0) return res.status(404).send(
             { statusCode: 404, message: 'Debit Record not found' }
             )
-        res.send({ statusCode: 200, deletedDebit })
+        res.send({ statusCode: 200, data: deletedDebit })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -189,7 +190,9 @@ async function getCreditEntries(req, res) {
             entity_associated = null,
             property_associated = null,
             source = null,
-            rel_time = null 
+            rel_time = null,
+            generate_excel = false ,
+            file_name = null
         } = req.body
         let { from_timestamp = null, to_timestamp = null } = req.body
         if (from_timestamp && !to_timestamp) {
@@ -205,19 +208,30 @@ async function getCreditEntries(req, res) {
     }
         const creditEntries = await db('Credit')
             .where(builder => {
-                if(entity_associated) builder.where({ entity_associated })
+                if(entity_associated) builder.whereIn('entity_associated', entity_associated)
                 if(property_associated) builder.where({ property_associated })
                 if(source) builder.where({ source })
                 if(from_timestamp && to_timestamp) builder.whereBetween('created_at', [from_timestamp, to_timestamp])
             })
         if (creditEntries.length === 0) return res.status(404).send(
             { statusCode: 404, message: 'No Credit Entries found' }
+        )
+
+        if (generate_excel) {
+            if (!file_name) return res.status(400).send(
+                { statusCode: 400, message: "file_name is required to generate excel" }
             )
+            const csv = await convertToCSV(creditEntries, file_name)
+            res.setHeader('Content-Type', 'text/csv')
+            res.setHeader('Content-Disposition', `attachment; filename=entries.csv`)
+            return res.send(csv)
+        }
+
         let message = 'All time Entries'
         if(from_timestamp && to_timestamp) {
              message = ` Entries-: \n From- ${from_timestamp} \n to- ${to_timestamp}`
         }
-        res.send({ statusCode: 200, message, creditEntries })
+        res.send({ statusCode: 200, message, data: creditEntries })
      } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -236,7 +250,9 @@ async function getDebitEntries(req, res) {
             source = null,
             is_bill = null,
             billed_for = null,
-            rel_time = null 
+            rel_time = null,
+            generate_excel = false,
+            file_name = null
         } = req.body
         let { from_timestamp = null, to_timestamp = null } = req.body
         if (from_timestamp && !to_timestamp) {
@@ -252,7 +268,7 @@ async function getDebitEntries(req, res) {
         }
         const debitEntries = await db('Debit')
             .where(builder => {
-                if(entity_associated) builder.where({ entity_associated })
+                if(entity_associated) builder.whereIn('entity_associated', entity_associated)
                 if(property_associated) builder.where({ property_associated })
                 if(source) builder.where({ source })
                 if(is_bill) builder.where({ is_bill })
@@ -262,11 +278,20 @@ async function getDebitEntries(req, res) {
         if (debitEntries.length === 0) return res.status(404).send(
             { statusCode: 404, message: 'No Debit Entries found' }
             )
+        if (generate_excel) {
+            if (!file_name) return res.status(400).send(
+                { statusCode: 400, message: "file_name is required to generate excel" }
+            )
+            const csv = await convertToCSV(creditEntries, file_name)
+            res.setHeader('Content-Type', 'text/csv')
+            res.setHeader('Content-Disposition', `attachment; filename=entries.csv`)
+            return res.send(csv)
+        }
         let message = 'All time Entries'
         if(from_timestamp && to_timestamp) {
             message = ` Entries-: \n From- ${from_timestamp} \n to- ${to_timestamp}`
         }
-        res.send({ statusCode: 200, message, debitEntries })
+        res.send({ statusCode: 200, message, data: debitEntries })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
