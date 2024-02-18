@@ -7,9 +7,23 @@ const {
 	PG_HOST = 'localhost', 
 	PG_USERNAME, 
 	PG_PASSWORD, 
-	PG_DATABASE
+	PG_DATABASE,
+	ENDPOINT_ID = '',
  } = process.env
 
+ // LOCAL
+// export const db = knex({
+// 	client: 'pg',
+// 	connection: {
+// 		host: PG_HOST,
+// 		port: PG_PORT,
+// 		user: PG_USERNAME,
+// 		password: PG_PASSWORD,
+// 		database: PG_DATABASE
+// 	}
+// })
+
+// DEV/PROD
 export const db = knex({
 	client: 'pg',
 	connection: {
@@ -17,7 +31,10 @@ export const db = knex({
 		port: PG_PORT,
 		user: PG_USERNAME,
 		password: PG_PASSWORD,
-		database: PG_DATABASE
+		database: PG_DATABASE,
+		ssl: {
+			rejectUnauthorized: false
+		}
 	}
 })
 
