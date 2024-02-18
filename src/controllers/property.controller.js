@@ -12,7 +12,7 @@ const createProperty = async (req, res) => {
         const { property_name, description } = req.body
         const property_id = `P_${property_name.replace(/\s/g, '').toLowerCase()}`
         const property = await db('Property').insert({ property_name, property_id, description }).returning('*')
-        res.send({ statusCode: 200, property })
+        res.send({ statusCode: 200, data: property })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -31,7 +31,7 @@ const getProperties = async (req, res) => {
             properties = await db('Property').where('property_name', 'ilike', `%${property_name}%`)
         else 
             properties = await db('Property').select('*')
-        res.send({ statusCode: 200, properties })
+        res.send({ statusCode: 200, data: properties })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -47,7 +47,7 @@ const updateProperty = async (req, res) => {
         const { description } = req.body
         const property = await db('Property').where({ property_id }).update({ description }).returning('*')
         if (!property.length) return res.status(404).send({ statusCode: 404, message: 'Property not found' })
-        res.send({ statusCode: 200, property })
+        res.send({ statusCode: 200, data: property })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })

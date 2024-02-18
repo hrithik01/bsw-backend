@@ -13,7 +13,7 @@ const createEntity = async (req, res) => {
         const { entity_name, entity_type, description } = req.body
         const entity_username = `${ENTITIES[entity_type]}_${entity_name.replace(/\s/g, '').toLowerCase()}`
         const entity = await db('Entity').insert({ entity_name, entity_type, entity_username, description }).returning('*')
-        res.send({ statusCode: 200, entity })
+        res.send({ statusCode: 200, data: entity })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -41,7 +41,7 @@ const getEntities = async (req, res) => {
             entities = await db('Entity').where('entity_name', 'ilike', `%${entity_name}%`)
         else 
             entities = await db('Entity').select('*')
-        res.send({ statusCode: 200, entities })
+        res.send({ statusCode: 200, data: entities })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })
@@ -61,7 +61,7 @@ const deleteEntity = async (req, res) => {
         else 
             return res.status(400).send({ statusCode: 400, message: "You must provide either an entity_id or an entity_username" })
         if (!deletedEntity.length) return res.status(404).send({ statusCode: 404, message: "Entity not found" })
-        res.send({ statusCode: 200, deletedEntity })
+        res.send({ statusCode: 200, data: deletedEntity })
     } catch (error) {
         console.error(error)
         res.status(500).send({ message: error.message })

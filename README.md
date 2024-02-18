@@ -31,6 +31,7 @@ Payments are managed through the [`payments.controller.js`](bsw-backend/src/cont
 - `GET /payment/debit/:transaction_id`: Get a debit entry by transaction ID.
 - `GET /payment/debit/delete/:transaction_id`: Delete a debit entry by transaction ID.
 - `POST /payment/debit/fetch`: Get debit entries. This API can filter entries based on `rel_time` in the request body.
+- A sample timestamp `2024-02-17T19:26:57.637Z`
 
 ## Installation
 
