@@ -39,7 +39,11 @@ export const db = knex({
 })
 
 db.raw('SELECT 1')
-  .then(() => console.log(`Connected to ${PG_DATABASE} database`))	
+  .then( async () => {
+	console.log(`Connected to ${PG_DATABASE} database`)
+	// await db.destroy()
+	// console.log('Connection closed')
+  })	
   .catch((err) => console.log('Connection failed', err));
 
 const app = express()
