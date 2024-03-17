@@ -15,6 +15,6 @@ export async function convertToCSV(jsonData, title) {
     });
 
     const csv = new ObjectsToCsv(modifiedData);
-    await csv.toDisk(`./${title}.csv`);
+    // await csv.toDisk(`./${title}.csv`);
     return csv;
 }

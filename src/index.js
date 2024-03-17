@@ -2,41 +2,34 @@ import express from 'express'
 import router from './routes/index.js'
 import knex from 'knex'
 
-const { 
+const {
+	APP_ENV = 'local',
 	PG_PORT = 5432, 
 	PG_HOST = 'localhost', 
 	PG_USERNAME, 
 	PG_PASSWORD, 
 	PG_DATABASE,
-	ENDPOINT_ID = '',
  } = process.env
 
- // LOCAL
-// export const db = knex({
-// 	client: 'pg',
-// 	connection: {
-// 		host: PG_HOST,
-// 		port: PG_PORT,
-// 		user: PG_USERNAME,
-// 		password: PG_PASSWORD,
-// 		database: PG_DATABASE
-// 	}
-// })
-
-// DEV/PROD
-export const db = knex({
+let dbConfig = {
 	client: 'pg',
 	connection: {
 		host: PG_HOST,
 		port: PG_PORT,
 		user: PG_USERNAME,
 		password: PG_PASSWORD,
-		database: PG_DATABASE,
-		ssl: {
-			rejectUnauthorized: false
-		}
+		database: PG_DATABASE
 	}
-})
+}
+
+export let db = knex(dbConfig)
+
+if(APP_ENV !== 'local') {
+	dbConfig.connection.ssl = {
+		rejectUnauthorized: false
+	}
+	db = knex(dbConfig)
+}
 
 db.raw('SELECT 1')
   .then( async () => {
