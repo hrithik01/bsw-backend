@@ -4,7 +4,8 @@ import {
     getCreditEntriesValidation,
     transactionIdValidation,
     createDebitEntryValidation,
-    getDebitEntriesValidation
+    getDebitEntriesValidation,
+    getAllEntriesValidation
 } from "../utils/validations.js"
 import { convertToCSV } from "../utils/files.js"
 
@@ -298,6 +299,69 @@ async function getDebitEntries(req, res) {
     }
 }
 
+async function fetchAllEntries(req, res) {
+    try {
+        const { error } = getAllEntriesValidation.validate(req.body)
+        if (error) return res.status(400).send(
+            { statusCode: 400, message: error.details[0].message}
+        )
+        const { 
+            entity_associated = null,
+            property_associated = null,
+            rel_time = null,
+            generate_excel = false,
+            file_name = null
+        } = req.body
+        let { from_timestamp = null, to_timestamp = null } = req.body
+        if (from_timestamp && !to_timestamp) {
+            to_timestamp = new Date()
+        }
+        if(from_timestamp && to_timestamp && from_timestamp > to_timestamp) return res.status(400).send(
+            { statusCode: 400, message: "from_timestamp must be less than to_timestamp" }
+            )
+        if (rel_time) {
+            const { fromDate = null, toDate = null }  = await convertRelTimeToTimestamp(rel_time)
+            from_timestamp = fromDate
+            to_timestamp = toDate
+        }
+        const creditEntries = await db('Credit')
+            .where(builder => {
+                if(entity_associated) builder.whereIn('entity_associated', entity_associated)
+                if(property_associated) builder.where({ property_associated })
+                if(from_timestamp && to_timestamp) builder.whereBetween('created_at', [from_timestamp, to_timestamp])
+            })
+        creditEntries.forEach(entry => entry.Type = 'Credit')
+        const debitEntries = await db('Debit')
+            .where(builder => {
+                if(entity_associated) builder.whereIn('entity_associated', entity_associated)
+                if(property_associated) builder.where({ property_associated })
+                if(from_timestamp && to_timestamp) builder.whereBetween('created_at', [from_timestamp, to_timestamp])
+            })
+        debitEntries.forEach(entry => entry.Type = 'Debit')
+        if (creditEntries.length === 0 && debitEntries.length === 0) return res.status(404).send(
+            { statusCode: 404, message: 'No Entries found' }
+            )
+        const allEntries = [...creditEntries, ...debitEntries].sort((a, b) => a.created_at - b.created_at);
+        if (generate_excel) {
+            if (!file_name) return res.status(400).send(
+                { statusCode: 400, message: "file_name is required to generate excel" }
+            )
+            const csv = await convertToCSV(allEntries, file_name)
+            res.setHeader('Content-Type', 'text/csv')
+            res.setHeader('Content-Disposition', `attachment; filename=entries.csv`)
+            return res.send(csv)
+        }
+        let message = 'All time Entries'
+        if(from_timestamp && to_timestamp) {
+            message = ` Entries-: \n From- ${from_timestamp} \n to- ${to_timestamp}`
+        }
+        res.send({ statusCode: 200, message, data: allEntries })
+    } catch (error) {
+        console.error(error)
+        res.status(500).send({ message: error.message })
+    }
+}
+
 export const paymentsController = {
     createCredit,
     getCreditById,
@@ -306,5 +370,6 @@ export const paymentsController = {
     createDebit,
     getDebitById,
     getDebitEntries,
-    deleteDebitById
+    deleteDebitById,
+    fetchAllEntries
 }

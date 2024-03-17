@@ -93,3 +93,13 @@ export const getDebitEntriesValidation = joi.object({
     generate_excel: joi.boolean().required(),
     file_name: joi.string().regex(/^[a-zA-Z0-9_]{3,40}$/).allow(null)
 })
+
+export const getAllEntriesValidation = joi.object({
+    entity_associated: joi.array().items(joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/)),
+    property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
+    from_timestamp: joi.date().iso().allow(null),
+    to_timestamp: joi.date().iso().allow(null),
+    rel_time: joi.string().valid(...REL_TIME_PERIODS).allow(null),
+    generate_excel: joi.boolean().required(),
+    file_name: joi.string().regex(/^[a-zA-Z0-9_]{3,40}$/).allow(null)
+})
