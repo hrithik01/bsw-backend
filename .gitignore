@@ -1,6 +1,7 @@
 node_modules
 .DS_Store
 .env
-*.sh
+devdeploy.sh
+proddeploy.sh
 *.pem
 *.crt

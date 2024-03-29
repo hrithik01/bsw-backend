@@ -13,6 +13,7 @@ paymentsRouter.post('/debit', checkWriteAccessKeyMiddleware, paymentsController.
 paymentsRouter.get('/debit/:transaction_id', paymentsController.getDebitById)
 paymentsRouter.get('/debit/delete/:transaction_id', checkDeleteAccessKeyMiddleware, paymentsController.deleteDebitById)
 paymentsRouter.post('/debit/fetch', paymentsController.getDebitEntries)
+
 paymentsRouter.post('/all-entries', paymentsController.fetchAllEntries)
 
 export default paymentsRouter
