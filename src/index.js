@@ -1,6 +1,7 @@
 import express from 'express'
 import router from './routes/index.js'
 import knex from 'knex'
+import { ipRL, pathRL, staticRL } from './utils/limiter.js'
 
 const {
 	APP_ENV = 'local',
@@ -45,7 +46,12 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
+app.use(ipRL)
+app.use(pathRL)
+app.use(staticRL)
+
 app.use('/', router)
+
 
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}`)
