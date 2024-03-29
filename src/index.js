@@ -2,6 +2,7 @@ import express from 'express'
 import router from './routes/index.js'
 import knex from 'knex'
 import { ipRL, pathRL, staticRL } from './utils/limiter.js'
+import helmet from 'helmet'
 
 const {
 	APP_ENV = 'local',
@@ -45,6 +46,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.json())
+app.use(helmet())
 
 app.use(ipRL)
 app.use(pathRL)
