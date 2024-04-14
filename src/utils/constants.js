@@ -57,7 +57,7 @@ export const EXPENSE_SOURCE = [
     'loan-emi',
     'rent',
     'material-bill',
-    'labour-bill',
+    'service-bill',
     'utility-bill',
     'property-purchase',
     'registry',
@@ -88,27 +88,28 @@ export const MATERIAL_TYPE = [
 ]
 
 export const SERVICE_TYPE = [
-    'mason',
-    'labour',
-    'carpenter',
-    'plumber',
-    'electrician',
-    'painter',
-    'flooring_wala',
-    'interior_wala',
-    'civil',
-    'lawyer',
+    'SERVICE_mason',
+    'SERVICE_labour',
+    'SERVICE_carpenter',
+    'SERVICE_plumber',
+    'SERVICE_electrician',
+    'SERVICE_painter',
+    'SERVICE_flooring',
+    'SERVICE_interior',
+    'SERVICE_civil',
+    'SERVICE_lawyer',
+    'SERVICE_machinery',
     'SERVICE_other'
 ]
 
 export const UTILITY_TYPE = [
-    'electricity',
-    'water',
-    'fuel',
-    'printing',
-    'advertisement',
-    'emitra',
-    'registry',
+    'UTILITY_electricity',
+    'UTILITY_water',
+    'UTILITY_fuel',
+    'UTILITY_printing',
+    'UTILITY_advertisement',
+    'UTILITY_emitra',
+    'UTILITY_registry',
     'BILL_other'
 ]
 

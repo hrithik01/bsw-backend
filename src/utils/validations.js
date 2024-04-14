@@ -13,7 +13,7 @@ import {
 export const entityValidation = joi.object({
     entity_name: joi.string().regex(/^[a-zA-Z0-9\s]{3,75}$/).required(),
     entity_type: joi.string().valid(...ENTITY_TYPES).required(),
-    description: joi.string().required()
+    description: joi.string().min(3).max(250).required()
 })
 
 export const getEntitiesValidation = joi.object({
@@ -30,7 +30,7 @@ export const deleteEntityValidation = joi.object({
 
 export const createPropertyValidation = joi.object({
     property_name: joi.string().regex(/^[a-zA-Z0-9\s]{3,75}$/).required(),
-    description: joi.string().required()
+    description: joi.string().min(3).max(400).required()
 })
 
 export const getPropertyValidation = joi.object({
@@ -39,7 +39,7 @@ export const getPropertyValidation = joi.object({
 })
 
 export const updatePropertyValidation = joi.object({
-    description: joi.string().required()
+    description: joi.string().min(3).max(400).required()
 })
 
 export const createCreditEntryValidation = joi.object({
@@ -49,7 +49,7 @@ export const createCreditEntryValidation = joi.object({
     entity_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     is_property_associated: joi.boolean().required(),
     property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
-    description: joi.string().required(),
+    description: joi.string().min(3).max(400).required(),
     transaction_date: joi.string().regex(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(20[0-9]{2})$/).required()
 })
 
@@ -77,7 +77,7 @@ export const createDebitEntryValidation = joi.object({
     property_associated: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/),
     is_bill: joi.boolean().required(),
     billed_for: joi.string().valid(...MATERIAL_TYPE, ...SERVICE_TYPE, ...UTILITY_TYPE),
-    description: joi.string().required(),
+    description: joi.string().min(3).max(400).required(),
     transaction_date: joi.string().regex(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(20[0-9]{2})$/).required()
 })
 
@@ -102,4 +102,16 @@ export const getAllEntriesValidation = joi.object({
     rel_time: joi.string().valid(...REL_TIME_PERIODS).allow(null),
     generate_excel: joi.boolean().required(),
     file_name: joi.string().regex(/^[a-zA-Z0-9_]{3,40}$/).allow(null)
+})
+
+export const signupValidation = joi.object({
+    fullname: joi.string().min(3).max(50).required(),
+    username: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/).required(),
+    email: joi.string().email().required(),
+    password: joi.string().min(8).max(50).required()
+})
+
+export const loginValidation = joi.object({
+    username: joi.string().regex(/^[a-zA-Z0-9_]{3,75}$/).required(),
+    password: joi.string().min(8).max(50).required()
 })

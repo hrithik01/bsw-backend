@@ -17,3 +17,4 @@ function createRL(keyFunction, timeFrame, maxReq) {
 export const ipRL = createRL((req) => 'h2j-bsw-' + req.ip, IP_TIME_FRAME, parseInt(IP_MAX_REQ))
 export const pathRL = createRL((req) => 'h2j-bsw-' + req.path, PATH_TIME_FRAME, parseInt(PATH_MAX_REQ))
 export const staticRL = createRL((req) => 'h2j-bsw-static', PATH_TIME_FRAME, parseInt(PATH_MAX_REQ)*5)
+export const authRL = createRL((req) => 'h2j-bsw-auth', PATH_TIME_FRAME, 3)
