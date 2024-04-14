@@ -19,5 +19,7 @@ export IP_TIME_FRAME='300'
 export PATH_MAX_REQ='30'
 export PATH_TIME_FRAME='600'
 
+export JWT_SECRET='samplejwtsecret'
+
 # npm run start
 npm run dev
