@@ -1,5 +1,6 @@
 import express from 'express'
 import { paymentsController } from '../controllers/payments.controller.js'
+import { interestController } from '../controllers/interests.controller.js'
 import { checkDeleteAccessKeyMiddleware, checkWriteAccessKeyMiddleware } from '../utils/middlewares.js'
 import { authMiddleware } from '../utils/authentication.js'
 
@@ -15,6 +16,8 @@ paymentsRouter.get('/debit/:transaction_id', paymentsController.getDebitById)
 paymentsRouter.get('/debit/delete/:transaction_id', checkDeleteAccessKeyMiddleware, paymentsController.deleteDebitById)
 paymentsRouter.post('/debit/fetch', paymentsController.getDebitEntries)
 
-paymentsRouter.post('/all-entries', authMiddleware, paymentsController.fetchAllEntries)
+paymentsRouter.post('/calculate-interest', authMiddleware, interestController.calculateInterest);
+
+paymentsRouter.post('/all-entries', authMiddleware, interestController.calculateInterest);
 
 export default paymentsRouter
